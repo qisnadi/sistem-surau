@@ -149,22 +149,15 @@
                 { masa: "11:50 - 12:20", mula: 710 }, { masa: "12:20 - 12:50", mula: 740 }
             ];
 
-            function formatTarikhISO(dateObj) {
-                let tahun = dateObj.getFullYear();
-                let bulan = String(dateObj.getMonth() + 1).padStart(2, '0');
-                let hari = String(dateObj.getDate()).padStart(2, '0');
-                return `${tahun}-${bulan}-${hari}`;
-            }
-
-            function dapatkanTarikhLokalMalaysia() {
-                let d = new Date();
-                let utc = d.getTime() + (d.getTimezoneOffset() * 60000);
-                let myTime = new Date(utc + (3600000 * 8)); 
-                return formatTarikhISO(myTime);
+            // Formula magik paksa tarikh bertukar mengikut format YYYY-MM-DD waktu Malaysia (+08:00)
+            function tukarKeTarikhMalaysia(tarikhInput) {
+                let d = new Date(tarikhInput);
+                if (isNaN(d.getTime())) return '';
+                return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kuala_Lumpur', year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
             }
 
             return {
-                tarikhDipilih: dapatkanTarikhLokalMalaysia(),
+                tarikhDipilih: tukarKeTarikhMalaysia(new Date()),
                 senaraiSlot: [],
                 dbData: [],
                 isAdmin: false, loading: false, bukaModal: false, isEditMode: false,
@@ -195,7 +188,8 @@
                     if(Array.isArray(this.dbData)) {
                         this.dbData.forEach(item => {
                             if (item.tarikh) {
-                                let tRef = item.tarikh.split('T')[0];
+                                // Paksa tukar tarikh cloud ke tarikh Malaysia dengan formula tegar
+                                let tRef = tukarKeTarikhMalaysia(item.tarikh);
                                 if (tRef === this.tarikhDipilih) {
                                     dataHariIni[item.indexSlot] = item;
                                 }
@@ -205,10 +199,8 @@
                     }
 
                     let sekarang = new Date();
-                    let utc = sekarang.getTime() + (sekarang.getTimezoneOffset() * 60000);
-                    let myTime = new Date(utc + (3600000 * 8));
-                    let minitSemasa = (myTime.getHours() * 60) + myTime.getMinutes();
-                    let hriIni = dapatkanTarikhLokalMalaysia();
+                    let minitSemasa = (sekarang.getHours() * 60) + sekarang.getMinutes();
+                    let hriIni = tukarKeTarikhMalaysia(sekarang);
 
                     this.senaraiSlot = slotAsas.map((slot, index) => {
                         if (dataHariIni[index]) {
