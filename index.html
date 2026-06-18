@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Tempahan Surau Ar-Raudhah V2</title>
-    <!-- Tailwind CSS & Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
@@ -13,289 +12,170 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans" x-data="surauApp()">
 
-    <!-- Header Bersama Logo Sekolah Terkini -->
+    <!-- Header -->
     <header class="bg-emerald-600 text-white shadow-md p-4 sticky top-0 z-50 flex justify-between items-center">
         <div class="flex items-center space-x-3">
             <div class="bg-white p-1 rounded-full shadow-inner flex items-center justify-center w-12 h-12 overflow-hidden border border-emerald-500/20">
-                <img src="https://lh3.googleusercontent.com/d/14O68NMQSwWdvZLpuCII9GGvTQgzGyoLL" 
-                     alt="Logo SK Tanjung Batu Keramat" 
-                     class="w-full h-full object-contain object-center"
-                     onerror="this.onerror=null; this.src='https://placehold.co/100x100?text=SKTBK';">
+                <img src="https://lh3.googleusercontent.com/d/14O68NMQSwWdvZLpuCII9GGvTQgzGyoLL" alt="Logo" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/100x100?text=SKTBK';">
             </div>
             <div>
-                <h1 class="text-base md:text-lg font-extrabold leading-none tracking-wide">SURAU AR-RAUDHAH V2</h1>
-                <p class="text-[10px] md:text-xs font-semibold tracking-wider text-emerald-100 mt-1">SK TG BATU KERAMAT, TAWAU</p>
+                <h1 class="text-base md:text-lg font-extrabold leading-none">SURAU AR-RAUDHAH V2</h1>
+                <p class="text-[10px] md:text-xs font-semibold text-emerald-100 mt-1">SK TG BATU KERAMAT, TAWAU</p>
             </div>
         </div>
         <div>
-            <!-- Butang Admin -->
-            <button x-show="!isAdmin" @click="logMasukAdmin()" class="bg-emerald-700 hover:bg-emerald-800 px-3 py-1.5 rounded-lg text-sm font-semibold transition shadow">
-                Log Masuk Admin
-            </button>
+            <button x-show="!isAdmin" @click="logMasukAdmin()" class="bg-emerald-700 hover:bg-emerald-800 px-3 py-1.5 rounded-lg text-sm font-semibold transition">Log Masuk Admin</button>
             <div x-show="isAdmin" class="flex items-center space-x-3">
-                <span class="bg-red-500 text-xs px-2 py-1 rounded-full text-white font-bold animate-pulse">MODE ADMIN</span>
-                <button @click="isAdmin = false" class="bg-gray-700 hover:bg-gray-800 px-3 py-1.5 rounded-lg text-sm font-semibold transition">
-                    Log Keluar
-                </button>
+                <span class="bg-red-500 text-xs px-2 py-1 rounded-full text-white font-bold animate-pulse">ADMIN</span>
+                <button @click="isAdmin = false" class="bg-gray-700 hover:bg-gray-800 px-3 py-1.5 rounded-lg text-sm font-semibold transition">Keluar</button>
             </div>
         </div>
     </header>
 
     <main class="max-w-4xl mx-auto p-4 md:p-6 space-y-6">
-
-        <!-- Loading Overlay -->
+        <!-- Loading -->
         <div x-show="loading" class="fixed inset-0 bg-black/30 backdrop-blur-xs flex items-center justify-center z-50" x-cloak>
             <div class="bg-white p-4 rounded-xl shadow-md flex items-center space-x-3">
                 <div class="w-6 h-6 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-                <span class="text-sm font-semibold text-gray-700">Memproses Data Cloud... Sila tunggu</span>
+                <span class="text-sm font-semibold">Memproses data...</span>
             </div>
         </div>
 
-        <!-- BAHAGIAN 1: KALENDER & DASHBOARD STATISTIK ADMIN -->
+        <!-- Dashboard & Kalendar -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Kalender -->
-            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:col-span-2 flex flex-col justify-center">
-                <h2 class="text-lg font-bold text-gray-700 mb-3 flex items-center gap-2">
-                    📅 <span>Pilih Tarikh Tempahan</span>
-                </h2>
-                <input type="date" x-model="tarikhDipilih" @change="kemaskiniSlot()" 
-                       class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none text-lg">
+            <section class="bg-white rounded-2xl shadow-sm p-5 md:col-span-2 flex flex-col justify-center border border-gray-100">
+                <h2 class="text-sm font-bold text-gray-700 mb-2">📅 Pilih Tarikh Tempahan:</h2>
+                <input type="date" x-model="tarikhDipilih" @change="kemaskiniSlot()" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 text-lg">
             </section>
-
-            <!-- Dashboard Ringkas (Portfolio Ustazah) -->
             <section class="bg-gradient-to-br from-emerald-700 to-emerald-900 rounded-2xl text-white p-5 flex flex-col justify-between shadow-md">
                 <div>
-                    <h3 class="text-xs uppercase tracking-wider font-bold text-emerald-200">Analisis Penggunaan Bulan Ini</h3>
+                    <h3 class="text-xs uppercase font-bold text-emerald-200">Analisis Bulan Ini</h3>
                     <div class="text-3xl font-black mt-1" x-text="totalTempahanBulanIni + ' Kali'">0 Kali</div>
                 </div>
-                <div class="text-[11px] text-emerald-100/80 border-t border-emerald-600/50 pt-2 mt-2 space-y-0.5">
-                    <div>🔥 Kumpulan Tertinggi: <span class="font-bold text-white" x-text="kelasTertinggi"></span></div>
-                    <div>📌 Aktiviti Utama: <span class="font-bold text-white" x-text="aktivitiTertinggi"></span></div>
+                <div class="text-[11px] text-emerald-100/80 border-t border-emerald-600/50 pt-2 mt-2">
+                    <div>🔥 Tertinggi: <span class="font-bold text-white" x-text="kelasTertinggi"></span></div>
                 </div>
             </section>
         </div>
 
-        <!-- BAHAGIAN 2: PAPARAN SLOT JADUAL -->
-        <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5" x-show="tarikhDipilih">
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-100 pb-3 mb-4 gap-2">
-                <div>
-                    <h3 class="text-md font-bold text-emerald-800">
-                        Slot Jadual: <span class="text-gray-900" x-text="formatTarikh(tarikhDipilih)"></span>
-                    </h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Sila pilih slot kosong atau klik pada tempahan untuk urusan admin.</p>
-                </div>
-                <div class="flex flex-wrap items-center gap-3 text-xs font-medium">
-                    <span class="flex items-center gap-1"><span class="w-3 h-3 bg-white border border-gray-300 rounded"></span> Kosong</span>
-                    <span class="flex items-center gap-1"><span class="w-3 h-3 bg-yellow-400 rounded"></span> Menunggu</span>
-                    <span class="flex items-center gap-1"><span class="w-3 h-3 bg-red-500 rounded"></span> Penuh</span>
-                    <span class="flex items-center gap-1"><span class="w-3 h-3 bg-gray-200 rounded"></span> Terlepas</span>
+        <!-- Jadual Slot -->
+        <section class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-sm font-bold text-emerald-800">Senarai Slot: <span class="text-gray-900" x-text="formatTarikh(tarikhDipilih)"></span></h3>
+                <div class="flex gap-2 text-[10px] font-bold">
+                    <span class="bg-gray-100 px-2 py-0.5 rounded border">Kosong</span>
+                    <span class="bg-yellow-400 text-gray-900 px-2 py-0.5 rounded">Menunggu</span>
+                    <span class="bg-red-500 text-white px-2 py-0.5 rounded">Penuh</span>
                 </div>
             </div>
 
-            <!-- Senarai Slot -->
+            <!-- Grid Slot yang PASTI KELUAR -->
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 <template x-for="(slot, index) in senaraiSlot" :key="index">
                     <div :class="{
                             'bg-red-500 text-white border-red-500 shadow-md': slot.status === 'penuh',
-                            'bg-amber-400 text-gray-900 border-amber-400 shadow-sm': slot.status === 'menunggu',
+                            'bg-amber-400 text-gray-900 border-amber-400': slot.status === 'menunggu',
                             'bg-gray-100 text-gray-400 border-gray-200 opacity-60 cursor-not-allowed': slot.status === 'terlepas',
                             'bg-white text-gray-700 border-gray-200 hover:border-emerald-500 hover:bg-emerald-50/50 cursor-pointer': slot.status === 'kosong'
                          }"
-                         class="border p-4 rounded-xl transition flex flex-col justify-between relative min-h-[110px]"
+                         class="border p-4 rounded-xl transition flex flex-col justify-between min-h-[100px]"
                          @click="klikSlot(index)">
                         
                         <div class="flex justify-between items-start w-full">
-                            <span class="text-sm font-bold tracking-tight" x-text="slot.masa"></span>
-                            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider" 
-                                  :class="{
-                                    'bg-red-700 text-white': slot.status === 'penuh',
-                                    'bg-amber-600 text-white': slot.status === 'menunggu',
-                                    'bg-gray-300 text-gray-600': slot.status === 'terlepas',
-                                    'bg-emerald-100 text-emerald-800': slot.status === 'kosong'
-                                  }">
-                                <span x-text="slot.status === 'penuh' ? 'Disahkan' : (slot.status === 'menunggu' ? 'Menunggu' : (slot.status === 'terlepas' ? 'Lepas' : 'Kosong'))"></span>
+                            <span class="text-sm font-bold" x-text="slot.masa"></span>
+                            <span class="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase" :class="slot.status === 'penuh' ? 'bg-red-700 text-white' : 'bg-gray-200 text-gray-700'">
+                                <span x-text="slot.status === 'penuh' ? 'Penuh' : (slot.status === 'menunggu' ? 'Menunggu' : (slot.status === 'terlepas' ? 'Lepas' : 'Kosong'))"></span>
                             </span>
                         </div>
 
-                        <!-- Maklumat Tempahan -->
-                        <div x-show="slot.info" class="text-xs mt-2 p-2 rounded-lg space-y-0.5 border"
-                             :class="{
-                                'bg-gray-200/50 text-gray-500 border-gray-300': slot.status === 'terlepas',
-                                'bg-amber-500/30 text-amber-950 border-amber-500/40': slot.status === 'menunggu',
-                                'bg-red-600/50 text-white border-red-400/30': slot.status === 'penuh'
-                             }">
+                        <div x-show="slot.info" class="text-xs mt-2 p-1.5 rounded bg-black/5 border border-black/10">
                             <div class="truncate"><strong>Oleh:</strong> <span x-text="slot.info.nama"></span></div>
-                            <div class="truncate"><strong>Kumpulan:</strong> <span x-text="slot.info.kelas"></span></div>
-                            <div class="text-[11px] line-clamp-1 leading-tight mt-0.5"><strong :class="slot.status === 'penuh' ? 'text-white' : 'text-gray-700'">Tujuan:</strong> <span x-text="slot.info.tujuan"></span></div>
+                            <div class="truncate"><strong>Kelas:</strong> <span x-text="slot.info.kelas"></span></div>
                         </div>
                     </div>
                 </template>
             </div>
         </section>
+    </main>
 
-        <!-- KONTROL ADMIN MASTER (KUNCI/BUKA SEMUA SLOT) -->
-        <section x-show="isAdmin" class="bg-red-50 rounded-2xl border border-red-200 p-5" x-cloak>
-            <h3 class="text-sm font-bold text-red-800 mb-2">⚙️ Kawalan Blok Tempahan Hari Ini</h3>
-            <div class="flex flex-col sm:flex-row gap-3">
-                <button @click="kunciSemuaSlot()" class="w-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl transition shadow">
-                    🔒 Kunci Semua Slot (Aktiviti Khas / Cuti)
-                </button>
-                <button @click="bukaSemuaSlot()" class="w-full bg-white hover:bg-gray-100 text-red-700 border border-red-300 text-xs font-bold py-2.5 px-4 rounded-xl transition">
-                    🔓 Padam & Reset Semua Slot Hari Ini
-                </button>
+    <!-- MODAL (BORANG TEMPAHAN / EDIT) -->
+    <div x-show="bukaModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50" x-cloak>
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4" @click.away="bukaModal = false">
+            <h3 class="text-md font-bold border-b pb-2" x-text="isEditMode ? 'Urus Slot (Admin)' : 'Tempahan Baru'"></h3>
+            
+            <div class="space-y-3 text-sm">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Nama Guru:</label>
+                    <input type="text" x-model="borang.nama" class="w-full p-2 border rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Kelas:</label>
+                    <select x-model="borang.kelas" class="w-full p-2 border rounded-lg bg-white text-sm">
+                        <option value="">-- Pilih --</option>
+                        <option value="Gabungan Khas Tahap 1 (Thn 1,2,3)">Gabungan Khas Tahap 1</option>
+                        <option value="Gabungan Khas Tahap 2 (Thn 4,5,6)">Gabungan Khas Tahap 2</option>
+                        <option value="Aktiviti Guru / Kakitangan">Aktiviti Guru</option>
+                        <option value="Tahun 4">Tahun 4</option>
+                        <option value="Tahun 5">Tahun 5</option>
+                        <option value="Tahun 6">Tahun 6</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Tujuan / Aktiviti:</label>
+                    <textarea x-model="borang.tujuan" rows="2" class="w-full p-2 border rounded-lg text-sm"></textarea>
+                </div>
             </div>
-        </section>
 
-        <!-- MODAL BORANG TEMPAHAN / EDIT ADMIN -->
-        <div x-show="bukaModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50" x-cloak>
-            <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4" @click.away="bukaModal = false">
-                <div class="flex justify-between items-center border-b pb-2">
-                    <h3 class="text-lg font-bold text-gray-800" x-text="isEditMode ? 'Kemaskini & Edit Slot (Admin)' : 'Borang Tempahan Baru'"></h3>
-                    <button @click="bukaModal = false" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            <div class="flex flex-col gap-2 pt-2 border-t text-xs">
+                <div x-show="isEditMode" class="space-y-2 w-full" x-cloak>
+                    <button @click="sahkanStatusMenunggu()" x-show="statusAsalBagiSlotEdit === 'menunggu'" class="w-full bg-green-600 text-white font-bold p-2 rounded-lg">✓ Sahkan Kelulusan</button>
+                    <button @click="padamSlotEditAdmin()" class="w-full bg-red-600 text-white font-bold p-2 rounded-lg">🗑️ Padam Tempahan</button>
                 </div>
-
-                <div class="text-sm space-y-1 bg-emerald-50 p-3 rounded-xl text-emerald-900 border border-emerald-200">
-                    <div><strong>Tarikh:</strong> <span x-text="formatTarikh(tarikhDipilih)"></span></div>
-                    <div><strong>Waktu Mula:</strong> <span x-text="slotDipilihMasa"></span></div>
-                </div>
-
-                <!-- Pilihan Durasi (Ditutup jika Edit Mode) -->
-                <div x-show="!isEditMode">
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Pilih Durasi Tempahan:</label>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                        <button type="button" @click="durasi = 30" :class="durasi === 30 ? 'bg-emerald-600 text-white' : 'bg-gray-100'" class="p-2.5 rounded-xl font-semibold text-center text-xs transition">30 Min</button>
-                        <button type="button" @click="durasi = 60" :disabled="!semakSlotSeterusnyaBolehDiambil(1)" :class="durasi === 60 ? 'bg-emerald-600 text-white' : 'bg-gray-100'" class="p-2.5 rounded-xl font-semibold text-center text-xs transition disabled:opacity-30">1 Jam</button>
-                        <button type="button" @click="durasi = 90" :disabled="!semakSlotSeterusnyaBolehDiambil(2)" :class="durasi === 90 ? 'bg-emerald-600 text-white' : 'bg-gray-100'" class="p-2.5 rounded-xl font-semibold text-center text-xs transition disabled:opacity-30">1.5 Jam</button>
-                        <button type="button" @click="durasi = 120" :disabled="!semakSlotSeterusnyaBolehDiambil(3)" :class="durasi === 120 ? 'bg-emerald-600 text-white' : 'bg-gray-100'" class="p-2.5 rounded-xl font-semibold text-center text-xs transition disabled:opacity-30">2 Jam</button>
-                    </div>
-                </div>
-
-                <!-- Input Borang Maklumat -->
-                <div class="space-y-3">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nama Pemohon / Guru:</label>
-                        <input type="text" x-model="borang.nama" placeholder="Contoh: Ustazah Balqis" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 text-sm">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Pilih Kelas / Kumpulan:</label>
-                        <select x-model="borang.kelas" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white text-sm">
-                            <option value="">-- Sila Pilih Kelas --</option>
-                            <optgroup label="Gabungan Khas / Program Besar">
-                                <option value="Gabungan Khas Tahap 1 (Thn 1,2,3)">Gabungan Khas Tahap 1 (Thn 1,2,3)</option>
-                                <option value="Gabungan Khas Tahap 2 (Thn 4,5,6)">Gabungan Khas Tahap 2 (Thn 4,5,6)</option>
-                                <option value="Semua Murid (Tahun 1 - Tahun 6)">Semua Murid (Tahun 1 - Tahun 6)</option>
-                            </optgroup>
-                            <optgroup label="Kumpulan Sekolah">
-                                <option value="Prasekolah">Prasekolah</option>
-                                <option value="PPKI">PPKI</option>
-                                <option value="Aktiviti Guru / Kakitangan">Aktiviti Guru / Kakitangan</option>
-                                <option value="Pihak Luar / Jemputan">Pihak Luar / Jemputan</option>
-                            </optgroup>
-                            <optgroup label="Kelas Lazim (Tahun 1-6)">
-                                <option value="Tahun 1">Tahun 1 (Semua Aliran)</option>
-                                <option value="Tahun 2">Tahun 2 (Semua Aliran)</option>
-                                <option value="Tahun 3">Tahun 3 (Semua Aliran)</option>
-                                <option value="Tahun 4">Tahun 4 (Semua Aliran)</option>
-                                <option value="Tahun 5">Tahun 5 (Semua Aliran)</option>
-                                <option value="Tahun 6">Tahun 6 (Semua Aliran)</option>
-                            </optgroup>
-                        </select>
-                    </div>
-
-                    <!-- Sistem Pilihan Aktiviti Pantas (Quick Select) -->
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Pilihan Aktiviti Pantas:</label>
-                        <div class="flex flex-wrap gap-1.5 mb-2">
-                            <template x-for="act in senaraiAktivitiPantas">
-                                <button type="button" @click="borang.tujuan = act" class="bg-gray-100 hover:bg-emerald-100 text-[11px] font-semibold px-2.5 py-1 rounded-md transition text-gray-600" x-text="act"></button>
-                            </template>
-                        </div>
-                        <textarea x-model="borang.tujuan" rows="2" placeholder="Atau taip tujuan penggunaan di sini..." class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 text-sm"></textarea>
-                    </div>
-                </div>
-
-                <!-- Butang Aksi Mengikut Keadaan Form -->
-                <div class="flex flex-col gap-2 pt-2 border-t">
-                    <!-- Jika dalam mod Edit Admin -->
-                    <div x-show="isEditMode" class="space-y-2 w-full" x-cloak>
-                        <div class="grid grid-cols-2 gap-2">
-                            <button @click="sahkanStatusMenunggu()" x-show="statusAsalBagiSlotEdit === 'menunggu'" class="bg-green-600 text-white font-bold p-2.5 rounded-lg text-xs shadow">✓ Sahkan Kelulusan</button>
-                            <button @click="hantarKemaskiniAdmin()" class="bg-blue-600 text-white font-bold p-2.5 rounded-lg text-xs shadow">💾 Simpan Perubahan</button>
-                        </div>
-                        <button @click="padamSlotEditAdmin()" class="w-full bg-red-600 text-white font-bold p-2 text-xs rounded-lg">🗑️ Padam / Batalkan Tempahan Ini</button>
-                    </div>
-                    
-                    <!-- Jika Borang Tempahan Baru Biasa -->
-                    <div x-show="!isEditMode" class="flex space-x-3 w-full">
-                        <button @click="bukaModal = false" class="w-1/2 bg-gray-100 text-gray-700 font-bold p-2.5 rounded-lg text-sm">Batal</button>
-                        <button @click="hantarTempahan Baru()" class="w-1/2 bg-emerald-600 text-white font-bold p-2.5 rounded-lg text-sm shadow-md" x-text="isAdmin ? 'Sahkan (Admin)' : 'Hantar Mohon'"></button>
-                    </div>
+                <div x-show="!isEditMode" class="flex space-x-2 w-full">
+                    <button @click="bukaModal = false" class="w-1/2 bg-gray-100 p-2 rounded-lg">Batal</button>
+                    <button @click="hantarTempahan()" class="w-1/2 bg-emerald-600 text-white font-bold p-2 rounded-lg">Hantar</button>
                 </div>
             </div>
         </div>
+    </div>
 
-    </main>
-
-    <!-- LOGIK JAVASCRIPT MASTER -->
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvnggiM2Z01ciW6csQ037FhktyXQPrFsbc0a4y_Zba8gE0jUIBybS_hNSnxQmCsJebkw/exec';
-        const TELEGRAM_BOT_TOKEN = '8894486262:AAEjH4DK4AKiNDIy70pGhhChWMnZFYWURlU'; 
-        const TELEGRAM_CHAT_ID = '@tempahanSurauArRaudhah'; 
-
+        
         function surauApp() {
             const slotAsas = [
-                { masa: "06:30 - 07:00", mula: 390, akhir: 420 },
-                { masa: "07:00 - 07:30", mula: 420, akhir: 450 },
-                { masa: "07:30 - 08:00", mula: 450, akhir: 480 },
-                { masa: "08:00 - 08:30", mula: 480, akhir: 510 },
-                { masa: "08:30 - 09:00", mula: 510, akhir: 540 },
-                { masa: "09:00 - 09:30", mula: 540, akhir: 570 },
-                { masa: "09:30 - 10:00", mula: 570, akhir: 600 },
-                { masa: "10:20 - 10:50", mula: 620, akhir: 650 },
-                { masa: "10:50 - 11:20", mula: 650, akhir: 680 },
-                { masa: "11:20 - 11:50", mula: 680, akhir: 710 },
-                { masa: "11:50 - 12:20", mula: 710, akhir: 740 },
-                { masa: "12:20 - 12:50", mula: 740, akhir: 770 }
+                { masa: "06:30 - 07:00", mula: 390 }, { masa: "07:00 - 07:30", mula: 420 },
+                { masa: "07:30 - 08:00", mula: 450 }, { masa: "08:00 - 08:30", mula: 480 },
+                { masa: "08:30 - 09:00", mula: 510 }, { masa: "09:00 - 09:30", mula: 540 },
+                { masa: "09:30 - 10:00", mula: 570 }, { masa: "10:20 - 10:50", mula: 620 },
+                { masa: "10:50 - 11:20", mula: 650 }, { masa: "11:20 - 11:50", mula: 680 },
+                { masa: "11:50 - 12:20", mula: 710 }, { masa: "12:20 - 12:50", mula: 740 }
             ];
 
-            function dapatkanTarikhMalaysia(dateObj = new Date()) {
-                const opsi = { timeZone: 'Asia/Kuala_Lumpur', year: 'numeric', month: '2-digit', day: '2-digit' };
-                const formatter = new Intl.DateTimeFormat('en-CA', opsi);
-                return formatter.format(dateObj);
+            function dapatkanTarikhLokal() {
+                let d = new Date();
+                let offset = d.getTimezoneOffset();
+                let mY = new Date(d.getTime() - (offset*60*1000) + (8*60*60*1000)); 
+                return mY.toISOString().split('T')[0];
             }
 
             return {
-                tarikhDipilih: dapatkanTarikhMalaysia(),
+                tarikhDipilih: dapatkanTarikhLokal(),
                 senaraiSlot: [],
-                dbData: [], 
-                isAdmin: false,
-                loading: false,
-                bukaModal: false,
-                isEditMode: false,
-                statusAsalBagiSlotEdit: '',
-                slotDipilihIndex: null,
-                slotDipilihMasa: '',
-                durasi: 30,
+                dbData: [],
+                isAdmin: false, loading: false, bukaModal: false, isEditMode: false,
+                slotDipilihIndex: null, slotDipilihMasa: '', statusAsalBagiSlotEdit: '',
                 borang: { nama: '', kelas: '', tujuan: '' },
-                
-                // Statistik
-                totalTempahanBulanIni: 0,
-                kelasTertinggi: '-',
-                aktivitiTertinggi: '-',
+                totalTempahanBulanIni: 0, kelasTertinggi: '-',
 
-                senaraiAktivitiPantas: [
-                    "Amali Solat / Wuduk", 
-                    "Tasmis / j-QAF", 
-                    "Bacaan Yasin / Tazkirah", 
-                    "Mesyuarat / Taklimat", 
-                    "Sambutan Khas Panitia",
-                    "Aktiviti Perkhemahan"
-                ],
-
-                async init() { 
+                async init() {
+                    // Paksa bina slot kosong dulu supaya skrin TIADA KOSONG sementara tunggu cloud muat turun data
+                    this.binaSlotKosongAsas();
                     await this.muatDataDariGoogle();
-                    setInterval(() => this.kemaskiniSlot(), 60000);
+                },
+
+                binaSlotKosongAsas() {
+                    this.senaraiSlot = slotAsas.map(s => ({ ...s, status: 'kosong', info: null }));
                 },
 
                 async muatDataDariGoogle() {
@@ -303,68 +183,32 @@
                     try {
                         let respon = await fetch(GOOGLE_SCRIPT_URL);
                         this.dbData = await respon.json();
-                        this.kiraStatistikBulanan();
                         this.kemaskiniSlot();
-                    } catch (e) {
-                        console.error("Gagal sambung Google Sheets", e);
-                    } finally {
-                        this.loading = false;
-                    }
-                },
-
-                kiraStatistikBulanan() {
-                    let bulanSemasa = new Date().getMonth();
-                    let tahunSemasa = new Date().getFullYear();
-                    
-                    let dataBulanIni = this.dbData.filter(item => {
-                        let d = new Date(item.tarikh);
-                        return d.getMonth() === bulanSemasa && d.getFullYear() === tahunSemasa;
-                    });
-
-                    this.totalTempahanBulanIni = dataBulanIni.length;
-
-                    if(dataBulanIni.length === 0) {
-                        this.kelasTertinggi = '-'; this.aktivitiTertinggi = '-';
-                        return;
-                    }
-
-                    let kFreq = {}, tFreq = {};
-                    dataBulanIni.forEach(item => {
-                        kFreq[item.kelas] = (kFreq[item.kelas] || 0) + 1;
-                        tFreq[item.tujuan] = (tFreq[item.tujuan] || 0) + 1;
-                    });
-
-                    this.kelasTertinggi = Object.keys(kFreq).reduce((a, b) => kFreq[a] > kFreq[b] ? a : b, '-');
-                    this.aktivitiTertinggi = Object.keys(tFreq).reduce((a, b) => tFreq[a] > tFreq[b] ? a : b, '-');
+                    } catch (e) { console.error(e); } finally { this.loading = false; }
                 },
 
                 kemaskiniSlot() {
-                    if (!this.tarikhDipilih) return;
-                    
                     let dataHariIni = {};
-                    this.dbData.forEach(item => {
-                        let tRef = dapatkanTarikhMalaysia(new Date(item.tarikh));
-                        if (tRef === this.tarikhDipilih) {
-                            dataHariIni[item.indexSlot] = {
-                                nama: item.nama,
-                                kelas: item.kelas,
-                                tujuan: item.tujuan,
-                                statusLulus: item.statusLulus || 'lulus' // default lulus jika tiada parameter lama
-                            };
-                        }
-                    });
+                    if(Array.isArray(this.dbData)) {
+                        this.dbData.forEach(item => {
+                            let tRef = item.tarikh ? item.tarikh.split('T')[0] : '';
+                            if (tRef === this.tarikhDipilih) {
+                                dataHariIni[item.indexSlot] = item;
+                            }
+                        });
+                        this.totalTempahanBulanIni = this.dbData.length;
+                    }
 
                     let sekarang = new Date();
-                    let tarikhHariIniTeks = dapatkanTarikhMalaysia(sekarang);
-                    let mla = sekarang.toLocaleTimeString('ms-MY', { timeZone: 'Asia/Kuala_Lumpur', hour12: false }).split(':');
-                    let minitSemasa = (parseInt(mla[0]) * 60) + parseInt(mla[1]);
+                    let minitSemasa = (sekarang.getHours() * 60) + sekarang.getMinutes();
+                    let hriIni = dapatkanTarikhLokal();
 
                     this.senaraiSlot = slotAsas.map((slot, index) => {
                         if (dataHariIni[index]) {
-                            let statusReal = dataHariIni[index].statusLulus === 'menunggu' ? 'menunggu' : 'penuh';
-                            return { ...slot, status: statusReal, info: dataHariIni[index] };
+                            let sReal = dataHariIni[index].statusLulus === 'menunggu' ? 'menunggu' : 'penuh';
+                            return { ...slot, status: sReal, info: dataHariIni[index] };
                         }
-                        if (this.tarikhDipilih === tarikhHariIniTeks && minitSemasa >= slot.mula) {
+                        if (this.tarikhDipilih === hriIni && minitSemasa >= slot.mula) {
                             return { ...slot, status: 'terlepas', info: null };
                         }
                         return { ...slot, status: 'kosong', info: null };
@@ -374,208 +218,42 @@
                 klikSlot(index) {
                     let slot = this.senaraiSlot[index];
                     if (slot.status === 'terlepas') return;
-
                     this.slotDipilihIndex = index;
                     this.slotDipilihMasa = slot.masa;
 
                     if (slot.status === 'penuh' || slot.status === 'menunggu') {
-                        // Jika klik slot berisi, hanya Admin boleh Edit Terus
-                        if (!this.isAdmin) {
-                            alert(`Slot ini diboking oleh ${slot.info.nama} untuk ${slot.info.kelas}.`);
-                            return;
-                        }
-                        // Cetus Mod Edit Admin
+                        if (!this.isAdmin) { alert(`Slot diboking oleh ${slot.info.nama}`); return; }
                         this.isEditMode = true;
                         this.statusAsalBagiSlotEdit = slot.status;
-                        this.borang.nama = slot.info.nama;
-                        this.borang.kelas = slot.info.kelas;
-                        this.borang.tujuan = slot.info.tujuan;
+                        this.borang = { nama: slot.info.nama, kelas: slot.info.kelas, tujuan: slot.info.tujuan };
                         this.bukaModal = true;
                     } else {
-                        // Mod boking baru biasa
                         this.isEditMode = false;
-                        this.durasi = 30;
-                        this.borang.nama = ''; this.borang.kelas = ''; this.borang.tujuan = '';
+                        this.borang = { nama: '', kelas: '', tujuan: '' };
                         this.bukaModal = true;
                     }
                 },
 
-                semakSlotSeterusnyaBolehDiambil(bilanganSlot) {
-                    for (let i = 1; i <= bilanganSlot; i++) {
-                        let idx = this.slotDipilihIndex + i;
-                        if (idx >= this.senaraiSlot.length) return false;
-                        if (this.senaraiSlot[idx].status !== 'kosong') return false;
-                    }
-                    return true;
-                },
-
-                async hantarTempahan Baru() {
-                    if (!this.borang.nama.trim() || !this.borang.kelas || !this.borang.tujuan.trim()) {
-                        alert("Sila isi semua ruangan.");
-                        return;
-                    }
-
-                    this.loading = true;
-                    this.bukaModal = false;
-
-                    // Jika admin boking, auto lulus. Jika guru biasa boking, status jadi 'menunggu'
-                    let statusKelulusan = this.isAdmin ? 'lulus' : 'menunggu';
-                    let bilanganSlotDiperlukan = this.durasi / 30;
-
-                    try {
-                        for (let i = 0; i < bilanganSlotDiperlukan; i++) {
-                            let indexTarget = this.slotDipilihIndex + i;
-                            await fetch(GOOGLE_SCRIPT_URL, {
-                                method: 'POST',
-                                body: JSON.stringify({
-                                    action: "simpan",
-                                    tarikh: this.tarikhDipilih,
-                                    indexSlot: indexTarget,
-                                    masa: this.senaraiSlot[indexTarget].masa,
-                                    nama: this.borang.nama,
-                                    kelas: this.borang.kelas,
-                                    tujuan: i === 0 ? this.borang.tujuan : this.borang.tujuan + " (Sambungan)",
-                                    statusLulus: statusKelulusan
-                                })
-                            });
-                        }
-
-                        await this.notifikasiTelegram(this.borang, statusKelulusan, this.durasi);
-                        await this.muatDataDariGoogle();
-                        alert(this.isAdmin ? "Tempahan rasmi berjaya dimasukkan!" : "Permohonan dihantar! Sila tunggu Ustazah Balqis luluskan di sistem.");
-
-                    } catch (e) { alert("Ralat internet."); } finally { this.loading = false; }
-                },
-
-                async sahkanStatusMenunggu() {
-                    this.loading = true;
-                    this.bukaModal = false;
+                async hantarTempahan() {
+                    this.loading = true; this.bukaModal = false;
                     try {
                         await fetch(GOOGLE_SCRIPT_URL, {
                             method: 'POST',
                             body: JSON.stringify({
-                                action: "simpan",
-                                tarikh: this.tarikhDipilih,
-                                indexSlot: this.slotDipilihIndex,
-                                masa: this.slotDipilihMasa,
-                                nama: this.borang.nama,
-                                kelas: this.borang.kelas,
-                                tujuan: this.borang.tujuan,
-                                statusLulus: 'lulus'
-                            })
-                        });
-                        
-                        // Kirim notifikasi lulus ke Telegram
-                        const mesej = `✅ *TEMPAHAN DISAHKAN OLEH ADMIN*\n` +
-                                     `----------------------------------------\n` +
-                                     `📅 *Tarikh:* ${this.formatTarikh(this.tarikhDipilih)}\n` +
-                                     `⏰ *Masa:* ${this.slotDipilihMasa}\n` +
-                                     `👤 *Guru:* ${this.borang.nama}\n` +
-                                     `🏫 *Kelas:* ${this.borang.kelas}\n` +
-                                     `👍 *Status:* Diluluskan untuk kegunaan surau.`;
-                        
-                        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: mesej, parse_mode: 'Markdown' })
-                        });
-
-                        await this.muatDataDariGoogle();
-                        alert("Tempahan berjaya diluluskan!");
-                    } catch(e) { console.error(e); } finally { this.loading = false; }
-                },
-
-                async hantarKemaskiniAdmin() {
-                    this.loading = true;
-                    this.bukaModal = false;
-                    try {
-                        await fetch(GOOGLE_SCRIPT_URL, {
-                            method: 'POST',
-                            body: JSON.stringify({
-                                action: "simpan",
-                                tarikh: this.tarikhDipilih,
-                                indexSlot: this.slotDipilihIndex,
-                                masa: this.slotDipilihMasa,
-                                nama: this.borang.nama,
-                                kelas: this.borang.kelas,
-                                tujuan: this.borang.tujuan,
-                                statusLulus: this.statusAsalBagiSlotEdit === 'menunggu' ? 'menunggu' : 'lulus'
+                                action: "simpan", tarikh: this.tarikhDipilih, indexSlot: this.slotDipilihIndex,
+                                masa: this.slotDipilihMasa, nama: this.borang.nama, kelas: this.borang.kelas,
+                                tujuan: this.borang.tujuan, statusLulus: this.isAdmin ? 'lulus' : 'menunggu'
                             })
                         });
                         await this.muatDataDariGoogle();
-                        alert("Maklumat boking berjaya dikemaskini oleh Admin!");
                     } catch(e) { console.error(e); } finally { this.loading = false; }
                 },
 
                 async padamSlotEditAdmin() {
-                    if (!confirm("Batal/Padam tempahan slot ini?")) return;
-                    this.loading = true;
-                    this.bukaModal = false;
+                    if(!confirm("Padam slot ini?")) return;
+                    this.loading = true; this.bukaModal = false;
                     try {
-                        await fetch(GOOGLE_SCRIPT_URL, {
-                            method: 'POST',
-                            body: JSON.stringify({ action: "padam", tarikh: this.tarikhDipilih, indexSlot: this.slotDipilihIndex })
-                        });
-                        await this.muatDataDariGoogle();
-                        alert("Slot berjaya dikosongkan.");
-                    } catch(e) { console.error(e); } finally { this.loading = false; }
-                },
-
-                async notifikasiTelegram(info, status, minit) {
-                    let ikon = status === 'lulus' ? '🔔 *TEMPAHAN BARU (RASMI)*' : '⏳ *PERMOHONAN TEMPAHAN BARU*';
-                    let statusTeks = status === 'lulus' ? 'Disahkan (Admin)' : 'Menunggu Kelulusan Ustazah Balqis';
-                    
-                    const mesej = `${ikon}\n` +
-                                 `----------------------------------------\n` +
-                                 `📅 *Tarikh:* ${this.formatTarikh(this.tarikhDipilih)}\n` +
-                                 `⏰ *Waktu:* Mula jam ${this.slotDipilihMasa} (${minit} minit)\n` +
-                                 `👤 *Nama Guru:* ${info.nama}\n` +
-                                 `🏫 *Kelas/Kumpulan:* ${info.kelas}\n` +
-                                 `📌 *Tujuan:* ${info.tujuan}\n` +
-                                 `⚖️ *Status Kelulusan:* ${statusTeks}\n` +
-                                 `----------------------------------------\n` +
-                                 `_Sistem Surau Ar-Raudhah Cloud_`;
-
-                    try {
-                        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: mesej, parse_mode: 'Markdown' })
-                        });
-                    } catch (e) { console.error(e); }
-                },
-
-                async kunciSemuaSlot() {
-                    let alasan = prompt("Masukkan alasan boking blok (Contoh: Cuti/Peperiksaan):");
-                    if (!alasan) return;
-                    this.loading = true;
-                    try {
-                        for (let i = 0; i < slotAsas.length; i++) {
-                            await fetch(GOOGLE_SCRIPT_URL, {
-                                method: 'POST',
-                                body: JSON.stringify({
-                                    action: "simpan",
-                                    tarikh: this.tarikhDipilih,
-                                    indexSlot: i,
-                                    masa: slotAsas[i].masa,
-                                    nama: "ADMIN MASTER",
-                                    kelas: "Kunci Blok",
-                                    tujuan: alasan,
-                                    statusLulus: 'lulus'
-                                })
-                            });
-                        }
-                        await this.muatDataDariGoogle();
-                    } catch(e) { console.error(e); } finally { this.loading = false; }
-                },
-
-                async bukaSemuaSlot() { 
-                    if (!confirm("Reset & padam semua rekod boking untuk hari ini?")) return;
-                    this.loading = true;
-                    try {
-                        for (let i = 0; i < slotAsas.length; i++) {
-                            await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "padam", tarikh: this.tarikhDipilih, indexSlot: i }) });
-                        }
+                        await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "padam", tarikh: this.tarikhDipilih, indexSlot: this.slotDipilihIndex }) });
                         await this.muatDataDariGoogle();
                     } catch(e) { console.error(e); } finally { this.loading = false; }
                 },
