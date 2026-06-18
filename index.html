@@ -52,16 +52,13 @@
                     <h3 class="text-xs uppercase font-bold text-emerald-200">Analisis Bulan Ini</h3>
                     <div class="text-3xl font-black mt-1" x-text="totalTempahanBulanIni + ' Kali'">0 Kali</div>
                 </div>
-                <div class="text-[11px] text-emerald-100/80 border-t border-emerald-600/50 pt-2 mt-2">
-                    <div>🔥 Tertinggi: <span class="font-bold text-white" x-text="kelasTertinggi"></span></div>
-                </div>
             </section>
         </div>
 
         <!-- Jadual Slot -->
         <section class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
-                <h3 class="text-sm font-bold text-emerald-800">Senarai Slot: <span class="text-gray-900" x-text="formatTarikh(tarikhDipilih)"></span></h3>
+                <h3 class="text-sm font-bold text-emerald-800">Senarai Slot: <span class="text-gray-900" x-text="formatTarikhPaparan(tarikhDipilih)"></span></h3>
                 <div class="flex gap-2 text-[10px] font-bold">
                     <span class="bg-gray-100 px-2 py-0.5 rounded border">Kosong</span>
                     <span class="bg-yellow-400 text-gray-900 px-2 py-0.5 rounded">Menunggu</span>
@@ -69,7 +66,7 @@
                 </div>
             </div>
 
-            <!-- Grid Slot yang PASTI KELUAR -->
+            <!-- Grid Slot -->
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 <template x-for="(slot, index) in senaraiSlot" :key="index">
                     <div :class="{
@@ -98,7 +95,7 @@
         </section>
     </main>
 
-    <!-- MODAL (BORANG TEMPAHAN / EDIT) -->
+    <!-- MODAL -->
     <div x-show="bukaModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50" x-cloak>
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4" @click.away="bukaModal = false">
             <h3 class="text-md font-bold border-b pb-2" x-text="isEditMode ? 'Urus Slot (Admin)' : 'Tempahan Baru'"></h3>
@@ -152,24 +149,30 @@
                 { masa: "11:50 - 12:20", mula: 710 }, { masa: "12:20 - 12:50", mula: 740 }
             ];
 
-            function dapatkanTarikhLokal() {
+            function formatTarikhISO(dateObj) {
+                let tahun = dateObj.getFullYear();
+                let bulan = String(dateObj.getMonth() + 1).padStart(2, '0');
+                let hari = String(dateObj.getDate()).padStart(2, '0');
+                return `${tahun}-${bulan}-${hari}`;
+            }
+
+            function dapatkanTarikhLokalMalaysia() {
                 let d = new Date();
-                let offset = d.getTimezoneOffset();
-                let mY = new Date(d.getTime() - (offset*60*1000) + (8*60*60*1000)); 
-                return mY.toISOString().split('T')[0];
+                let utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+                let myTime = new Date(utc + (3600000 * 8)); 
+                return formatTarikhISO(myTime);
             }
 
             return {
-                tarikhDipilih: dapatkanTarikhLokal(),
+                tarikhDipilih: dapatkanTarikhLokalMalaysia(),
                 senaraiSlot: [],
                 dbData: [],
                 isAdmin: false, loading: false, bukaModal: false, isEditMode: false,
                 slotDipilihIndex: null, slotDipilihMasa: '', statusAsalBagiSlotEdit: '',
                 borang: { nama: '', kelas: '', tujuan: '' },
-                totalTempahanBulanIni: 0, kelasTertinggi: '-',
+                totalTempahanBulanIni: 0,
 
                 async init() {
-                    // Paksa bina slot kosong dulu supaya skrin TIADA KOSONG sementara tunggu cloud muat turun data
                     this.binaSlotKosongAsas();
                     await this.muatDataDariGoogle();
                 },
@@ -191,17 +194,21 @@
                     let dataHariIni = {};
                     if(Array.isArray(this.dbData)) {
                         this.dbData.forEach(item => {
-                            let tRef = item.tarikh ? item.tarikh.split('T')[0] : '';
-                            if (tRef === this.tarikhDipilih) {
-                                dataHariIni[item.indexSlot] = item;
+                            if (item.tarikh) {
+                                let tRef = item.tarikh.split('T')[0];
+                                if (tRef === this.tarikhDipilih) {
+                                    dataHariIni[item.indexSlot] = item;
+                                }
                             }
                         });
                         this.totalTempahanBulanIni = this.dbData.length;
                     }
 
                     let sekarang = new Date();
-                    let minitSemasa = (sekarang.getHours() * 60) + sekarang.getMinutes();
-                    let hriIni = dapatkanTarikhLokal();
+                    let utc = sekarang.getTime() + (sekarang.getTimezoneOffset() * 60000);
+                    let myTime = new Date(utc + (3600000 * 8));
+                    let minitSemasa = (myTime.getHours() * 60) + myTime.getMinutes();
+                    let hriIni = dapatkanTarikhLokalMalaysia();
 
                     this.senaraiSlot = slotAsas.map((slot, index) => {
                         if (dataHariIni[index]) {
@@ -259,7 +266,12 @@
                 },
 
                 logMasukAdmin() { if (prompt("Katalaluan Admin:") === "admin123") this.isAdmin = true; },
-                formatTarikh(s) { return s ? new Date(s).toLocaleDateString('ms-MY', { day: 'numeric', month: 'short', year: 'numeric' }) : ''; }
+                formatTarikhPaparan(s) { 
+                    if(!s) return '';
+                    let p = s.split('-');
+                    let d = new Date(p[0], p[1] - 1, p[2]);
+                    return d.toLocaleDateString('ms-MY', { day: 'numeric', month: 'short', year: 'numeric' });
+                }
             }
         }
     </script>
