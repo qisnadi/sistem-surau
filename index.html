@@ -106,15 +106,67 @@
                     <input type="text" x-model="borang.nama" class="w-full p-2 border rounded-lg text-sm">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-600 mb-1">Kelas:</label>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Pilih Kelas / Kumpulan:</label>
                     <select x-model="borang.kelas" class="w-full p-2 border rounded-lg bg-white text-sm">
-                        <option value="">-- Pilih --</option>
-                        <option value="Gabungan Khas Tahap 1 (Thn 1,2,3)">Gabungan Khas Tahap 1</option>
-                        <option value="Gabungan Khas Tahap 2 (Thn 4,5,6)">Gabungan Khas Tahap 2</option>
-                        <option value="Aktiviti Guru / Kakitangan">Aktiviti Guru</option>
-                        <option value="Tahun 4">Tahun 4</option>
-                        <option value="Tahun 5">Tahun 5</option>
-                        <option value="Tahun 6">Tahun 6</option>
+                        <option value="">-- Sila Pilih Kelas --</option>
+                        
+                        <optgroup label="Gabungan / Program Besar">
+                            <option value="Gabungan Khas Tahap 1 (Thn 1,2,3)">Gabungan Khas Tahap 1 (Thn 1,2,3)</option>
+                            <option value="Gabungan Khas Tahap 2 (Thn 4,5,6)">Gabungan Khas Tahap 2 (Thn 4,5,6)</option>
+                            <option value="Semua Murid (Tahun 1 - Tahun 6)">Semua Murid (Tahun 1 - Tahun 6)</option>
+                            <option value="Prasekolah">Prasekolah</option>
+                            <option value="PPKI">PPKI</option>
+                            <option value="Aktiviti Guru / Kakitangan">Aktiviti Guru / Kakitangan</option>
+                            <option value="Pihak Luar / Jemputan">Pihak Luar / Jemputan</option>
+                        </optgroup>
+
+                        <optgroup label="Tahun 1">
+                            <option value="1 UMS">1 UMS</option>
+                            <option value="1 UKM">1 UKM</option>
+                            <option value="1 UTM">1 UTM</option>
+                            <option value="1 UPM">1 UPM</option>
+                            <option value="1 UUM">1 UUM</option>
+                        </optgroup>
+
+                        <optgroup label="Tahun 2">
+                            <option value="2 UMS">2 UMS</option>
+                            <option value="2 UKM">2 UKM</option>
+                            <option value="2 UTM">2 UTM</option>
+                            <option value="2 UPM">2 UPM</option>
+                            <option value="2 UUM">2 UUM</option>
+                        </optgroup>
+
+                        <optgroup label="Tahun 3">
+                            <option value="3 UMS">3 UMS</option>
+                            <option value="3 UKM">3 UKM</option>
+                            <option value="3 UTM">3 UTM</option>
+                            <option value="3 UPM">3 UPM</option>
+                            <option value="3 UUM">3 UUM</option>
+                        </optgroup>
+
+                        <optgroup label="Tahun 4">
+                            <option value="4 UMS">4 UMS</option>
+                            <option value="4 UKM">4 UKM</option>
+                            <option value="4 UTM">4 UTM</option>
+                            <option value="4 UPM">4 UPM</option>
+                            <option value="4 UUM">4 UUM</option>
+                        </optgroup>
+
+                        <optgroup label="Tahun 5">
+                            <option value="5 UMS">5 UMS</option>
+                            <option value="5 UKM">5 UKM</option>
+                            <option value="5 UTM">5 UTM</option>
+                            <option value="5 UPM">5 UPM</option>
+                            <option value="5 UUM">5 UUM</option>
+                        </optgroup>
+
+                        <optgroup label="Tahun 6">
+                            <option value="6 UMS">6 UMS</option>
+                            <option value="6 UKM">6 UKM</option>
+                            <option value="6 UTM">6 UTM</option>
+                            <option value="6 UPM">6 UPM</option>
+                            <option value="6 UUM">6 UUM</option>
+                        </optgroup>
                     </select>
                 </div>
                 <div>
@@ -149,7 +201,6 @@
                 { masa: "11:50 - 12:20", mula: 710 }, { masa: "12:20 - 12:50", mula: 740 }
             ];
 
-            // Formula magik paksa tarikh bertukar mengikut format YYYY-MM-DD waktu Malaysia (+08:00)
             function tukarKeTarikhMalaysia(tarikhInput) {
                 let d = new Date(tarikhInput);
                 if (isNaN(d.getTime())) return '';
@@ -188,7 +239,6 @@
                     if(Array.isArray(this.dbData)) {
                         this.dbData.forEach(item => {
                             if (item.tarikh) {
-                                // Paksa tukar tarikh cloud ke tarikh Malaysia dengan formula tegar
                                 let tRef = tukarKeTarikhMalaysia(item.tarikh);
                                 if (tRef === this.tarikhDipilih) {
                                     dataHariIni[item.indexSlot] = item;
